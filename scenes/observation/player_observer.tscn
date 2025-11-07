@@ -44,6 +44,7 @@ wait_time = 60.0
 one_shot = true
 
 [node name="SensitivityTimer" type="Timer" parent="."]
+one_shot = true
 
 [connection signal="timeout" from="InactiveTimeout" to="." method="_on_inactive_timeout_timeout"]
 [connection signal="timeout" from="SensitivityTimer" to="." method="_on_sensitivity_timer_timeout"]

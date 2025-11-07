@@ -46,6 +46,8 @@ func _ready():
 		visible = false
 
 	sensitivity_timer.wait_time = sensitivity
+	sensitivity_timer.autostart = false
+
 
 
 func _input(event):
@@ -57,12 +59,6 @@ func _input(event):
 		elif is_observing:
 			is_observing = false
 			sensitivity_timer.stop()
-			currentObsEnd = Time.get_unix_time_from_system()
-			observations.append({
-				"id": currentObsId,
-				"start":currentObsStart,
-				"stop":currentObsEnd
-			})
 			#observation_ended.emit(self)
 		else:
 			is_observing = true
@@ -149,4 +145,14 @@ func _on_inactive_timeout_timeout() -> void:
 
 
 func _on_sensitivity_timer_timeout() -> void:
-	observe.emit(self)
+# End observation, refactor:
+	is_observing = false
+	target_shader.set_shader_parameter('is_observing', is_observing)
+
+	currentObsEnd = Time.get_unix_time_from_system()
+	observations.append({
+		"id": currentObsId,
+		"start":currentObsStart,
+		"stop":currentObsEnd
+	})
+	observation_ended.emit(self)

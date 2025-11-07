@@ -1,19 +1,22 @@
-extends Node2D
+class_name Localization extends Node2D
 
 
 @onready var MaskArea = $MaskArea
 @onready var SourceEvent = $Event
+@onready var CollisionPolygon = $MaskArea/CollisionPolygon2D
 @onready var PolyTexture = preload("res://art/grey_square.png")
 
 @export_enum (
-	"Swift_BAT:", # Arcmin localization
-	"FERMI_GBM:1", # Larger circle
-	"LVK:2" # Banana shape
+	"Swift_BAT:", 	# Arcmin localization
+	"FERMI_GBM:1", 	# Larger circle
+	"LVK:2" 		# Banana shape
 ) var LocalizationType = 0
 @export var Radius:int = 100
 @export var InnerRadius:int = 50
 @export var location: Vector2
 
+signal player_over
+signal player_exited
 
 var RoundedPolygon: RoundedPolygon2D = RoundedPolygon2D.new()
 var reveal_size:Vector2 = Vector2(150,50)
@@ -47,6 +50,7 @@ func _ready() -> void:
 	RoundedPolygon.uv = polygon
 
 	MaskArea.add_child(RoundedPolygon)
+	CollisionPolygon.polygon = polygon
 	image = Image.create_empty(1920, 1080, false, Image.FORMAT_RGBA8)
 	image.fill(RoundedPolygon.color)
 	mask_tex = ImageTexture.create_from_image(image)
@@ -59,25 +63,16 @@ func _ready() -> void:
 	RoundedPolygon.texture = mask_tex
 
 
-func _input(event: InputEvent) -> void:
-	# TODO: Update this to handle player inputs
-	if (Input.is_action_just_pressed("p1_primary") or
-		Input.is_action_just_pressed("p2_primary") or
-		Input.is_action_just_pressed("p3_primary") or
-		Input.is_action_just_pressed("p4_primary")):
-		print(event)
-	if event is InputEventMouseButton and event.is_pressed():
-		print("Mouse Click/Unclick at: ", event.position)
-		interact_at(event.position)
-
-
-func interact_at(pos:Vector2):
-	var targetRect = Rect2(pos-(reveal_size/2), reveal_size)
+func interact_at(pos:Vector2, player:PlayerObserver):
+	var targetRect = player.collision_shape.shape.get_rect() # Rect2(pos-(reveal_size/2), reveal_size)
+	# TODO: Figure out if there is a way that we should tell users the event
+	# is no longer present
 	if SourceEvent!= null && targetRect.has_point(SourceEvent.position):
 		SourceEvent.visible = true
+	var localPosition = player.target.global_position - global_position
 	for x in range(-reveal_size.x/2, reveal_size.x/2):
 		for y in range(-reveal_size.y/2, reveal_size.y/2):
-			var p = pos + Vector2(x, y)
+			var p = localPosition + Vector2(x, y)
 			if p.x >= 0 and p.x < image.get_width() and p.y >= 0 and p.y < image.get_height():
 				image.set_pixelv(p, Color.TRANSPARENT)
 	mask_tex.update(image)
@@ -104,3 +99,16 @@ func get_random_point_in_circle() -> Vector2:
 	var angle = randf_range(0, 2 * PI)
 	var vector = Vector2(l, 0)
 	return vector.rotated(angle)
+
+
+func _on_mask_area_body_entered(body: Node2D) -> void:
+	print(body)
+	if body.name == "Target":
+		var player = body.get_parent()
+		player_over.emit(self, player)
+
+
+func _on_mask_area_body_exited(body: Node2D) -> void:
+	if body.name == "Target":
+		var player = body.get_parent()
+		player_exited.emit(self, player)

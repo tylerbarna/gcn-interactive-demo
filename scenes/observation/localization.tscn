@@ -8,8 +8,15 @@ script = ExtResource("1_evtbj")
 LocalizationType = 1
 
 [node name="MaskArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="MaskArea"]
 
 [node name="Event" parent="." instance=ExtResource("3_qfcqe")]
 visible = false
 location = Vector2(408, 392)
 decay_rate = 1
+
+[connection signal="body_entered" from="MaskArea" to="." method="_on_mask_area_body_entered"]
+[connection signal="body_exited" from="MaskArea" to="." method="_on_mask_area_body_exited"]

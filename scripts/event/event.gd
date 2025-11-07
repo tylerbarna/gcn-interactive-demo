@@ -13,7 +13,7 @@ signal player_exited
 
 func _ready() -> void:
 	global_position = location
-	decay_timer.wait_time = 1 # Decay rate happens at a per second rate
+	#decay_timer.wait_time = 1 # Decay rate happens at a per second rate
 	var tween = create_tween()
 	# This rate could probably be better defined
 	tween.tween_property(self, "modulate:a", 0, (decay_timer.wait_time / decay_rate) * points)
