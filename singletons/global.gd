@@ -14,3 +14,18 @@ var PLAYERS:Array[PlayerResource] = [
 	Player_3,
 	Player_4
 ]
+
+var AFFILIATIONS:Array[String] = [
+	"The Outer Rim Research Network",
+	"The Pan-Galactic Gargle Blaster Initiative",
+	"The Hoth Research Consortium",
+	"The Space-Timey Wimey Institute",
+	"The Final Frontier Foundation",
+	"The Roddenberry Institute for Advanced Exploration",
+	"The Corellian Institute of Stellar Studies",
+	"The Andromeda Applied Astrophysics Group",
+	"The Vulcan Institute of Logic and Space Science",
+	"The Kessel Research Consortium",
+	"The Serenity Research Cooperative",
+	"The Kobayashi Maru Space Research Institute",
+]

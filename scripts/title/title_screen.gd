@@ -12,5 +12,5 @@ func _input(event):
 func _start_game():
 	SceneManager.change_scene_with_transition(
 		self,
-		load("res://scenes/observatory_selection/telescope_select.tscn")
+		load("res://scenes/intro/intro.tscn")
 	)

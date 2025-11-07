@@ -1,0 +1,100 @@
+[gd_scene load_steps=11 format=3 uid="uid://bru10828b6ex"]
+
+[ext_resource type="Script" uid="uid://cd3avnjhg25gp" path="res://scripts/intro/intro.gd" id="1_teox7"]
+[ext_resource type="Shader" uid="uid://ba6xcygwib32b" path="res://shaders/transparent_circle.gdshader" id="2_teox7"]
+[ext_resource type="Script" uid="uid://brokrca0nnqve" path="res://scripts/intro/scrolling_text.gd" id="3_teox7"]
+[ext_resource type="AudioStream" uid="uid://qsr0dpqovfv2" path="res://sounds/key-press.wav" id="4_1rrv8"]
+[ext_resource type="Shader" uid="uid://b7qa7vpclhrdq" path="res://shaders/logo.gdshader" id="4_ir5dn"]
+[ext_resource type="Texture2D" uid="uid://ct4g1i4h8w7vr" path="res://art/gcn_patch.png" id="5_1rrv8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kbcge"]
+shader = ExtResource("2_teox7")
+shader_parameter/resolution = Vector2(1920, 1080)
+
+[sub_resource type="Animation" id="Animation_8twl8"]
+resource_name = "intro_text"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ir5dn"]
+_data = {
+&"intro_text": SubResource("Animation_8twl8")
+}
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8yty6"]
+shader = ExtResource("4_ir5dn")
+
+[node name="Intro" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_teox7")
+
+[node name="player_1_intro" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 736.0
+offset_top = 856.0
+offset_right = 1186.0
+offset_bottom = 997.0
+bbcode_enabled = true
+fit_content = true
+scroll_following = true
+metadata/dialogue_label = ""
+
+[node name="player_2_intro" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 1184.0
+offset_top = 232.0
+offset_right = 1634.0
+offset_bottom = 357.0
+rotation = 3.14159
+bbcode_enabled = true
+fit_content = true
+scroll_following = true
+metadata/dialogue_label = ""
+
+[node name="player_3_intro" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 1264.0
+offset_top = 768.0
+offset_right = 1714.0
+offset_bottom = 893.0
+rotation = -1.5708
+bbcode_enabled = true
+fit_content = true
+scroll_following = true
+metadata/dialogue_label = ""
+
+[node name="player_4_intro" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 648.0
+offset_top = 320.0
+offset_right = 1098.0
+offset_bottom = 445.0
+rotation = 1.5708
+bbcode_enabled = true
+fit_content = true
+scroll_following = true
+metadata/dialogue_label = ""
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_kbcge")
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0, 0, 0, 1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_ir5dn")
+}
+script = ExtResource("3_teox7")
+dialogue_label_paths = Array[NodePath]([NodePath("../player_1_intro"), NodePath("../player_2_intro"), NodePath("../player_3_intro"), NodePath("../player_4_intro")])
+
+[node name="KeySound" type="AudioStreamPlayer" parent="AnimationPlayer"]
+stream = ExtResource("4_1rrv8")
+
+[node name="Logo" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.529412)
+visibility_layer = 513
+material = SubResource("ShaderMaterial_8yty6")
+position = Vector2(960, 544)
+scale = Vector2(0.341, 0.353)
+texture = ExtResource("5_1rrv8")
