@@ -63,21 +63,6 @@ func _ready() -> void:
 	RoundedPolygon.texture = mask_tex
 
 
-func interact_at(pos:Vector2, player:PlayerObserver):
-	var targetRect = player.collision_shape.shape.get_rect() # Rect2(pos-(reveal_size/2), reveal_size)
-	# TODO: Figure out if there is a way that we should tell users the event
-	# is no longer present
-	if SourceEvent!= null && targetRect.has_point(SourceEvent.position):
-		SourceEvent.visible = true
-	var localPosition = player.target.global_position - global_position
-	for x in range(-reveal_size.x/2, reveal_size.x/2):
-		for y in range(-reveal_size.y/2, reveal_size.y/2):
-			var p = localPosition + Vector2(x, y)
-			if p.x >= 0 and p.x < image.get_width() and p.y >= 0 and p.y < image.get_height():
-				image.set_pixelv(p, Color.TRANSPARENT)
-	mask_tex.update(image)
-
-
 func generate_circular_polygon(radius:int, offset_vector:Vector2) -> Polygon2D:
 	var points = 24
 	var polygon = Polygon2D.new()
