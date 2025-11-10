@@ -29,3 +29,14 @@ var AFFILIATIONS:Array[String] = [
 	"The Serenity Research Cooperative",
 	"The Kobayashi Maru Space Research Institute",
 ]
+
+enum OBSERVATION_BAND {
+	RADIO,
+	MICROWAVE,
+	INFRARED,
+	NIR,
+	OPTICAL,
+	UV,
+	XRAY,
+	GAMMA_RAY
+}

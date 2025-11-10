@@ -103,18 +103,29 @@ func _on_player_observe(playerObserver:PlayerObserver):
 
 
 func handle_interaction(player:PlayerObserver, loc:Localization):
+	# TODO: This mostly works, but there is an issue with covering
+	# negative value pixels. This probably has to do with the loc's
+	# image mask and I am not sure what the best way to fix is yet
 	var targetRect = player.collision_shape.shape.get_rect()
-	var playerGlobalRect = Rect2(player.to_global(player.target.position),targetRect.size)
+	var playerGlobalRect = Rect2(player.to_global(player.target.position - (targetRect.size / 2)),targetRect.size)
 
-	if loc.SourceEvent != null && playerGlobalRect.has_point(loc.to_global(loc.SourceEvent.position)):
+	if loc.SourceEvent != null && !loc.SourceEvent.visible && playerGlobalRect.has_point(loc.to_global(loc.SourceEvent.position)):
 		loc.SourceEvent.visible = true
-
-	for x in range(playerGlobalRect.position.x, playerGlobalRect.end.x):
-		for y in range(playerGlobalRect.position.y, playerGlobalRect.end.y):
-			var p = loc.to_local(Vector2(x, y))
-			if p.x >= 0 and p.x < loc.image.get_width() and p.y >= 0 and p.y < loc.image.get_height():
-				loc.image.set_pixelv(p, Color.TRANSPARENT)
-	loc.mask_tex.update(loc.image)
+		loc.MaskArea.queue_free()
+	elif loc.SourceEvent != null && loc.SourceEvent.visible:
+		var newObservation = {
+			'eventId': loc.eventId,
+			'band': player.current_band(),
+			'time': Time.get_unix_time_from_system()
+		}
+		player.controlling_player.add_observation(newObservation)
+	else:
+		for x in range(playerGlobalRect.position.x, playerGlobalRect.end.x):
+			for y in range(playerGlobalRect.position.y, playerGlobalRect.end.y):
+				var p = loc.MaskArea.to_local(Vector2(x, y))
+				if p.x >= 0 and p.x < loc.image.get_width() and p.y >= 0 and p.y < loc.image.get_height():
+					loc.image.set_pixelv(p, Color.TRANSPARENT)
+		loc.mask_tex.update(loc.image)
 
 
 func rotate_observing_players(rotation_speed):
