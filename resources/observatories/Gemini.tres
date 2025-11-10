@@ -6,10 +6,10 @@
 script = ExtResource("1_c45po")
 telescope_name = "Gemini"
 position = 0
-field_of_view = 0.0
+field_of_view = 0.002
 sensitivity = 0
 slew_speed = 0.0
 observation_delay = 0
-band = Array[int]([])
-type = ""
+bands = Array[int]([4, 3])
+type = "twin 8m class observatories (HI and Chile)"
 metadata/_custom_type_script = "uid://b70rxpxqa6sko"

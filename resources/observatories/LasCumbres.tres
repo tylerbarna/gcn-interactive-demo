@@ -6,10 +6,10 @@
 script = ExtResource("1_2oxfs")
 telescope_name = "Las Cumbres"
 position = 0
-field_of_view = 0.0
+field_of_view = 0.023
 sensitivity = 0
 slew_speed = 0.0
 observation_delay = 0
-band = Array[int]([])
-type = ""
+bands = Array[int]([4])
+type = "2m/1m class telescope network"
 metadata/_custom_type_script = "uid://b70rxpxqa6sko"
