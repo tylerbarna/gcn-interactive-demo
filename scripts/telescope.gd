@@ -5,17 +5,6 @@ enum physical_location {
 	SPACE
 }
 
-enum observation_band {
-	RADIO,
-	MICROWAVE,
-	INFRARED,
-	NIR,
-	OPTICAL,
-	UV,
-	XRAY,
-	GAMMA_RAY
-}
-
 # Basic Properties (Non-gameplay affecting)
 @export var telescope_name: String
 @export var position: physical_location
@@ -28,7 +17,7 @@ enum observation_band {
 @export var slew_speed: float
 @export var observation_delay: int
 ## Start and end of observable range in nanometers
-@export var band: Array[observation_band]
+@export var bands: Array[Global.OBSERVATION_BAND]
 @export var image: Texture2D
 @export var type: String
 

@@ -27,7 +27,7 @@ script = ExtResource("1_64v3t")
 
 [node name="PlayerObserver1" parent="PlayerObservers" instance=ExtResource("2_h2yge")]
 position = Vector2(960, 1059)
-observation_area = Vector2(150, 50)
+observation_area = Vector2(100, 50)
 controlling_player = ExtResource("4_u0tbu")
 
 [node name="PlayerObserver2" parent="PlayerObservers" instance=ExtResource("2_h2yge")]

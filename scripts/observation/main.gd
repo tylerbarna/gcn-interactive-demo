@@ -23,9 +23,7 @@ const OFFSET_MAP = [
 
 var target_map: Dictionary = {}
 var scores: Dictionary = {}
-
 var eventIdInc = 0
-
 
 
 func _ready():
@@ -37,7 +35,7 @@ func _ready():
 		scores[player_data.name] = 0
 
 	for playerObserver in PlayerObservers.get_children().filter(func(child): return child is PlayerObserver):
-		playerObserver.connect("observe", _on_player_observe)
+		playerObserver.connect("observation_ended", _on_player_observe)
 
 	Global.ROTATION_AXIS = OFFSET_MAP[SELECTED_OFFSET]
 	RotatingStarField.initialize_with_set_values()
@@ -45,15 +43,14 @@ func _ready():
 	Events.position = Global.ROTATION_AXIS
 	SessionTimer.start()
 
+	create_new_localization()
+
 
 func _process(delta: float) -> void:
 	var rotation_speed = SPEED * delta
 	Events.rotate(rotation_speed)
 	rotate_observing_players(rotation_speed)
 	ScoreLabel.text = "Score: " + str(score)
-	# TODO: Make this use the new Localization scene instead of event
-	if (len(Events.get_children()) < EVENTS_LIMIT):
-		create_new_localization()
 	score = scores.values().reduce(sum, 0)
 
 
@@ -79,6 +76,8 @@ func create_new_localization():
 	newLocalization.set("location", get_random_point())
 	newLocalization.eventId = eventIdInc
 	Events.add_child(newLocalization)
+	newLocalization.connect('player_over', _on_event_player_over)
+	newLocalization.connect('player_exited', _on_event_player_over)
 
 
 func get_random_point() -> Vector2:
@@ -98,10 +97,32 @@ func _on_player_exited(event:Node2D, playerObserver:PlayerObserver) -> void:
 
 
 func _on_player_observe(playerObserver:PlayerObserver):
-	# TODO: Rethink observation logic
-	for event in target_map[playerObserver.controlling_player.name]:
-		scores[playerObserver.controlling_player.name] += playerObserver.sensitivity * event.decay_rate
-	playerObserver.sensitivity_timer.start()
+	for event in target_map[playerObserver.controlling_player.name].filter(func (x): return x is Localization):
+		if event is Localization:
+			handle_interaction(playerObserver, event)
+
+
+func handle_interaction(player:PlayerObserver, loc:Localization):
+	var targetRect = player.collision_shape.shape.get_rect()
+	var playerGlobalRect = Rect2(player.to_global(player.target.position - (targetRect.size / 2)),targetRect.size)
+
+	if loc.SourceEvent != null && !loc.SourceEvent.visible && playerGlobalRect.has_point(loc.to_global(loc.SourceEvent.position)):
+		loc.SourceEvent.visible = true
+		loc.MaskArea.queue_free()
+	elif loc.SourceEvent != null && loc.SourceEvent.visible:
+		var newObservation = {
+			'eventId': loc.eventId,
+			'band': player.current_band(),
+			'time': Time.get_unix_time_from_system()
+		}
+		player.controlling_player.add_observation(newObservation)
+	else:
+		for x in range(playerGlobalRect.position.x, playerGlobalRect.end.x):
+			for y in range(playerGlobalRect.position.y, playerGlobalRect.end.y):
+				var p = loc.MaskArea.to_local(Vector2(x, y))
+				if p.x >= 0 and p.x < loc.image.get_width() and p.y >= 0 and p.y < loc.image.get_height():
+					loc.image.set_pixelv(p, Color.TRANSPARENT)
+		loc.mask_tex.update(loc.image)
 
 
 func rotate_observing_players(rotation_speed):

@@ -25,12 +25,7 @@ signal observe
 signal observation_ended
 
 var is_observing := false
-
-var currentObsId:int = 0
-var currentObsStart:float
-var currentObsEnd:float
-
-var observations = []
+var active_band_id = 0
 
 
 func _ready():
@@ -46,6 +41,7 @@ func _ready():
 		visible = false
 
 	sensitivity_timer.wait_time = sensitivity
+	sensitivity_timer.autostart = false
 
 
 func _input(event):
@@ -57,20 +53,13 @@ func _input(event):
 		elif is_observing:
 			is_observing = false
 			sensitivity_timer.stop()
-			currentObsEnd = Time.get_unix_time_from_system()
-			observations.append({
-				"id": currentObsId,
-				"start":currentObsStart,
-				"stop":currentObsEnd
-			})
-			#observation_ended.emit(self)
 		else:
 			is_observing = true
-			currentObsId += 1
 			observe.emit(self)
 			sensitivity_timer.start()
-			currentObsStart = Time.get_unix_time_from_system()
 		target_shader.set_shader_parameter('is_observing', is_observing)
+	elif (event.is_action_pressed("%s_secondary" % controlling_player.get_input_prefix())):
+		_cycle_observation_band()
 
 	# Restart the timeout counter for inactive players
 	timer.stop()
@@ -149,4 +138,14 @@ func _on_inactive_timeout_timeout() -> void:
 
 
 func _on_sensitivity_timer_timeout() -> void:
-	observe.emit(self)
+	is_observing = false
+	target_shader.set_shader_parameter('is_observing', is_observing)
+	observation_ended.emit(self)
+
+
+func _cycle_observation_band() -> void:
+	active_band_id = (active_band_id + 1) % len(controlling_player.observatory.bands)
+
+
+func current_band():
+	return controlling_player.observatory.bands[active_band_id]
