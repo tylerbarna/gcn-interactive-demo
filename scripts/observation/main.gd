@@ -103,9 +103,6 @@ func _on_player_observe(playerObserver:PlayerObserver):
 
 
 func handle_interaction(player:PlayerObserver, loc:Localization):
-	# TODO: This mostly works, but there is an issue with covering
-	# negative value pixels. This probably has to do with the loc's
-	# image mask and I am not sure what the best way to fix is yet
 	var targetRect = player.collision_shape.shape.get_rect()
 	var playerGlobalRect = Rect2(player.to_global(player.target.position - (targetRect.size / 2)),targetRect.size)
 
