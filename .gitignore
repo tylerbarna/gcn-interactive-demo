@@ -3,3 +3,9 @@
 /android/
 builds
 *.tmp
+
+# VSCode specific ignores
+.vscode/
+
+# OS generated files
+.DS_Store
